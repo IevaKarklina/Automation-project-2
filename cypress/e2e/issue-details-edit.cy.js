@@ -62,4 +62,41 @@ describe('Issue details editing', () => {
   });
 
   const getIssueDetailsModal = () => cy.get('[data-testid="modal:issue-details"]');
+
+  // Bonus task (#1)
+
+  it('Should check the dropdown for priority', () => {
+    const expectedLength = 5;
+    let issuePriorities = [];
+
+    getIssueDetailsModal().within(() => {
+      cy.get('[data-testid="select:priority"]').children().children().eq(1)
+        .invoke('text')
+        .then((initialPriority) => {
+          issuePriorities.push(initialPriority);
+        });
+
+      cy.get('[data-testid="select:priority"]').click();
+
+      cy.get('[data-select-option-value]').each(($option, index) => {
+        cy.wrap($option).invoke('text').then((priorityText) => {
+          issuePriorities.push(priorityText);
+          cy.log(`Added value: ${priorityText}, Array length: ${issuePriorities.length}`);
+        });
+      });
+    });
+    cy.then(() => {
+      expect(issuePriorities.length).to.equal(expectedLength);
+    });
+  });
+
+  // Bonus task (#2)
+  it('Should check that the reporters name has only characters in it', () => {
+    const regex = /^[A-Za-z\s]+$/;
+    cy.get('[data-testid="select:reporter"]').children().children().eq(1).invoke('text').then((reporterName) => {
+      expect(reporterName).to.match(regex);
+    });
+  });
+
+  
 });

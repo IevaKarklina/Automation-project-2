@@ -138,4 +138,26 @@ describe('Issue create', () => {
       cy.get('[data-testid="form-field:title"]').should('contain', 'This field is required');
     });
   });
+
+  // Bonus task (#3)
+  it('Should check that application is removing unnecessary spaces on the board view', () => {
+    const issueTitle = '   This is a title for task #3     ';
+    const trimmedTitle = issueTitle.trim();
+
+    cy.get('[data-testid="modal:issue-create"]').within(() => {
+      cy.get('.ql-editor').type('Description');
+      cy.get('input[name="title"]').type(issueTitle);
+      cy.get('button[type="submit"]').click();
+    });
+    cy.get('[data-testid="modal:issue-create"]').should('not.exist');
+    cy.reload();
+    cy.get('[data-testid="board-list:backlog"]').should('be.visible').within(() => {
+      cy.contains('[data-testid="list-issue"]', trimmedTitle)
+        .should('be.visible')
+        .invoke('text')
+        .then((actualText) => {
+          expect(actualText.trim()).to.equal(trimmedTitle);
+        });
+    });
+  });
 });
